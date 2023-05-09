@@ -1,73 +1,71 @@
 import { useState } from "react";
-import { Form, Button } from "react-bootstrap";
-import ehr from "../artifacts/contracts/ehr.sol/ehr.json";
 import Web3 from "web3";
+import ehrContract from "../artifacts/contracts/ehr.sol/ehr.json";
+
+const web3 = new Web3(Web3.givenProvider);
 
 function AddHospitalForm() {
-  const [adminAddress, setAdminAddress] = useState("");
-  const [hospitalAddress, setHospitalAddress] = useState("");
+  const [name, setName] = useState("");
+  const [description, setDescription] = useState("");
+  const [image, setImage] = useState("");
+  const [hospital_address, setHospitalAddress] = useState("");
 
-  async function handleSubmit(event) {
-    event.preventDefault();
+  async function handleSubmit(e) {
+    e.preventDefault();
 
-    const web3 = new Web3(window.ethereum);
     const accounts = await web3.eth.requestAccounts();
-    const account = accounts[0];
+    const contractAddress = "0x3da41833D2EAC7FA32Fee1e590d5a86CeDBFa611"; // replace with actual contract address
+    const contract = new web3.eth.Contract(ehrContract.abi, contractAddress);
+    const gasPrice = await web3.eth.getGasPrice();
+    const gasLimit = 300000;
 
-    const networkId = await web3.eth.net.getId();
-    const contractData = ehr.networks[networkId];
+    const result = await contract.methods
+      .registerHospital(accounts[0], name, description, image)
+      .send({ from: accounts[0], gasPrice, gasLimit });
 
-    if (!contractData) {
-      alert("Contract not found on selected network");
-      return;
-    }
-
-    const contract = new web3.eth.Contract(
-        ehr.abi,
-      contractData.address
-    );
-
-    try {
-      await contract.methods
-        .registerHospital(hospitalAddress)
-        .send({ from: account });
-
-      await contract.methods
-        .registerHospitalAdmin(hospitalAddress, adminAddress)
-        .send({ from: account });
-
-      alert("Hospital added successfully");
-    } catch (error) {
-      alert(error.message);
-    }
+    console.log(result);
   }
 
   return (
-    <Form onSubmit={handleSubmit} className="p-3 flex flex-col items-center justify-center gap-y-3">
-      <Form.Group controlId="formAdminAddress">
-        <Form.Label>Admin Address</Form.Label>
-        <Form.Control
+    <form onSubmit={handleSubmit} className="p-3">
+      <label>
+        Address:
+        <input
           type="text"
-          placeholder="Enter admin address"
-          value={adminAddress}
-          onChange={(event) => setAdminAddress(event.target.value)}
+          value={hospital_address}
+          onChange={(e) => setHospitalAddress(e.target.value)}
         />
-      </Form.Group>
-
-      <Form.Group controlId="formHospitalAddress">
-        <Form.Label>Hospital Address</Form.Label>
-        <Form.Control
+      </label>
+      <br />
+      <label>
+        Name:
+        <input
           type="text"
-          placeholder="Enter hospital address"
-          value={hospitalAddress}
-          onChange={(event) => setHospitalAddress(event.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
         />
-      </Form.Group>
-
-      <Button variant="primary" type="submit" className="bg-blue-700 rounded-md p-3 w-full text-white hover:bg-blue-400 duration-150">
-        Add Hospital
-      </Button>
-    </Form>
+      </label>
+      <br />
+      <label>
+        Description:
+        <input
+          type="text"
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </label>
+      <br />
+      <label>
+        Image:
+        <input
+          type="text"
+          value={image}
+          onChange={(e) => setImage(e.target.value)}
+        />
+      </label>
+      <br />
+      <button type="submit" className='p-3 bg-blue-400 w-full'>Register Hospital</button>
+    </form>
   );
 }
 
