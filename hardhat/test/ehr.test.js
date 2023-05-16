@@ -129,5 +129,6 @@ describe("EHR", function () {
         await expect(ehr.connect(addr1).getRecordHistoryOfPatient(addr3.getAddress()))
             .to.be.reverted;
     });
+    
 
 });
