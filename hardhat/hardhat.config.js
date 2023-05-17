@@ -15,7 +15,7 @@ module.exports = {
     },
     localhost: {
       url: "HTTP://127.0.0.1:7545",
-      privateKey: "6bf80240f0ec7159c6de76ac6a4036a296c8ad8e83b46b122d7c4e15687073f4" //private key of the account
+      privateKey: "a93e56c63dc65a137809c7d8c2e12e2eae62fe43d99be3c20a1224b579101c29"
     }
   },
   docgen: {
