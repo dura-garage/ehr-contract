@@ -8,14 +8,14 @@ require("solidity-docgen");
 //setting up the hardhat network to use the local network
 module.exports = {
   solidity: "0.8.18",
-  defaultNetwork: "hardhat",
+  defaultNetwork: "localhost",
   networks: {
     hardhat: {
       chainId: 1337,
     },
     localhost: {
       url: "HTTP://127.0.0.1:7545",
-      privateKey: "a93e56c63dc65a137809c7d8c2e12e2eae62fe43d99be3c20a1224b579101c29"
+      privateKey: "6bf80240f0ec7159c6de76ac6a4036a296c8ad8e83b46b122d7c4e15687073f4" //private key of the account
     }
   },
   docgen: {
