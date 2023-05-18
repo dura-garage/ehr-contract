@@ -4,6 +4,7 @@ import Homepage from "./pages/Homepage";
 import AddHospitalForm from "./pages/AddHospitalForm";
 import Hospital from "./pages/Hospitals";
 import RegisterUser from "./pages/RegisterUser";
+import ImageUploader from "./pages/ImageUploader";
 import { CONTRACT_ABI, CONTRACT_ADDRESS } from "./constants/config";
 
 
@@ -29,6 +30,9 @@ function App() {
 
       <hr className="w-full" />
       <Hospital />
+
+      <hr />
+      <ImageUploader/>
     </>
   );
 }
