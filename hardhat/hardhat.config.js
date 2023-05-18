@@ -1,6 +1,7 @@
 require("@nomicfoundation/hardhat-toolbox");
 require("solidity-coverage");
 require("solidity-docgen");
+require("dotenv").config();
 
 
 /** @type import('hardhat/config').HardhatUserConfig */
@@ -14,8 +15,8 @@ module.exports = {
       chainId: 1337,
     },
     localhost: {
-      url: "HTTP://127.0.0.1:7545",
-      privateKey: "6bf80240f0ec7159c6de76ac6a4036a296c8ad8e83b46b122d7c4e15687073f4"
+      url: process.env.LOCAL_URL,
+      privateKey: process.env.LOCAL_PRIVATE_KEY,
     }
   },
   docgen: {

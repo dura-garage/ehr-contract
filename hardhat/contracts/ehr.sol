@@ -109,6 +109,15 @@ contract ehr {
         return true;
     }
 
+    /// @notice Get the status of a user
+    /// @dev Return the status of a user
+    /// @param _user_address the address of the user
+    /// @return status of the user
+    function getUserStatus(address _user_address) external view returns(Status) {
+        return users[_user_address].status;
+    }
+
+
     /// @notice Doctor registration, only the owner of the contract can call this function
     /// @dev Set the user status to DOCTOR
     /// @return true if the user is registered as a doctor
