@@ -2,6 +2,8 @@ import { useState } from "react";
 import Web3 from "web3";
 import ehrContract from "../artifacts/contracts/ehr.sol/ehr.json";
 import {CONTRACT_ABI, CONTRACT_ADDRESS} from '../constants/ vconfig';
+import { create , urlSource} from 'ipfs-http-client';
+
 const web3 = new Web3(Web3.givenProvider);
 
 
