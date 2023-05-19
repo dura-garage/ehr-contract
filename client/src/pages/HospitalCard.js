@@ -1,20 +1,15 @@
 import React from "react";
 
-
-const Card = ({ name, description, ethAddress, image, key }) => (
-  <div className="max-w-sm">
-    <Card key={key}>
-      <h5 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-        {name}
-      </h5>
-      <h6 className="text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-        {ethAddress}
-      </h6>
-
-      <p className="font-normal text-gray-700 dark:text-gray-400">
-        {description}
-      </p>
-    </Card>
+const Card = (props) => (
+  <div className="card" key={props.key}>
+    <div className="card-header">
+      <h3 className="card-title">{props.name}</h3>
+    </div>
+    <div className="card-body">
+      <p className="card-text">{props.description}</p>
+      <p className="card-text">ETH Address:{props.ethAddress}</p>
+      <img src={`https://ipfs.io/ipfs/${props.image}`} alt="Hospital" style={{ width: '200px', height: '200px' }} />
+    </div>
   </div>
 );
 export default Card;

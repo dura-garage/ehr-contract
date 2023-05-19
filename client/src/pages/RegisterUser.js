@@ -1,52 +1,43 @@
-import { CONTRACT_ABI, CONTRACT_ADDRESS } from "../constants/config";
-import { ethers } from "ethers";
+import React from "react";
 import { useState, useEffect } from "react";
-
+import { registerUser, getUserStatus } from '../api/ehrContractApi'
 
 function RegisterUser() {
-  const [userStatus, setUserStatus] = useState(false);
+  const [userStatus, setUserStatus] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-    const transaction = await contract.registerUser();
+    const transaction = await registerUser();
     const result = await transaction.wait();
-    setUserStatus(true);
+    setUserStatus(getUserStatus());
     alert(result.events[0].event);
 
   }
 
-  const checkUserStatus = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
-    const userAddress = await provider.getSigner().getAddress();
-    const status = await contract.getUserStatus(userAddress);
-    setUserStatus(status);
-    if (status > 0) {
-      setUserStatus(true);
-    }
-    else {
-      setUserStatus(false);
-    }
-  }
-
   useEffect(() => {
-    checkUserStatus();
+    setUserStatus(getUserStatus());
   }, []);
 
-  useEffect(() => {
-    checkUserStatus();
-  }, [userStatus]);
+  
 
-  window.ethereum.on("accountsChanged", (accounts) => {
-    checkUserStatus();
-  });
+  useEffect(() => {
+    const handleAccountsChanged = (accounts) => {
+      setUserStatus(getUserStatus());
+    };
+
+    setUserStatus(getUserStatus());
+
+    window.ethereum.on("accountsChanged", handleAccountsChanged);
+
+    return () => {
+      window.ethereum.removeListener("accountsChanged", handleAccountsChanged);
+    };
+  }, []);
+
 
   return (
     <form onSubmit={handleSubmit} className="p-3">
-      {!userStatus &&
+      {(userStatus<1) &&
         (<button type="submit" className=" p-3 rounded-md w-full bg-green-400">
           Register
         </button>)
