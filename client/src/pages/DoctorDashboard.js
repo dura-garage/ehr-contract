@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
-import { signer } from "../api/ehrContractApi";
 
 function DoctorDashboard(){
     const [doctor, setDoctor] = useState(null);
 
     useEffect(() => {
-        setDoctor(signer.getAddress());
+        setDoctor(localStorage.getItem("connectedAddress"));
     }
     , []);
 

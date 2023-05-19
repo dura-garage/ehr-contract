@@ -1,12 +1,12 @@
 import { useState, useEffect } from "react";
-import { signer, getMyRecords} from "../api/ehrContractApi";
+import {getMyRecords} from "../api/ehrContractApi";
 
 function UserDashboard(){
     const [user, setUser] = useState(null);
     const [records, setRecords] = useState(null);
 
     useEffect(() => {
-        setUser(signer.getAddress());
+        setUser(localStorage.getItem("connectedAddress"));
         getMyRecords().then((records) => {
             setRecords(records);
         }

@@ -10,7 +10,7 @@ function Hospital() {
     async function fetchHospitals() {
       const result = await ehr.getAllHospitals();
       setHospitals(result);
-      console.log("Results ", result);
+      console.log("Hospitals ", result);
     }
     fetchHospitals();
   }, []);

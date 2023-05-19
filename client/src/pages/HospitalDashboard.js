@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
-import { signer, getDoctorsOfHospital, addDoctorToHospital } from '../api/ehrContractApi';
+import { getDoctorsOfHospital, addDoctorToHospital } from '../api/ehrContractApi';
 
 function HospitalDashboard(){
     const [hospital, setHospital] = useState(null);
     const [doctors, setDoctors] = useState([]);
 
     useEffect(() => {
-        setHospital(signer.getAddress());
-        getDoctorsOfHospital(signer.getAddress()).then((doctors) => {
+        setHospital(localStorage.getItem("connectedAddress"));
+        getDoctorsOfHospital(localStorage.getItem("connectedAddress")).then((doctors) => {
             setDoctors(doctors);
         }
         , []);
@@ -21,7 +21,7 @@ function HospitalDashboard(){
             <h2>Add Doctor:</h2>  
             <form onSubmit={(e) => {
                 e.preventDefault();
-                addDoctorToHospital(signer.getAddress(), e.target[0].value);
+                addDoctorToHospital(localStorage.getItem("connectedAddress"), e.target[0].value);
             }}>
                 <input type="text" placeholder="Doctor Address" required/>
                 <button type="submit">Add</button>

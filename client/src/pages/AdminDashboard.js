@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+
 import { registerHospital } from "../api/ehrContractApi";
 
 

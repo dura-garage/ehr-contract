@@ -28,7 +28,7 @@ const registerUser = async () => {
 }
 
 const getUserStatus = async () => {
-    const status = await ehr.getUserStatus()
+    const status = await ehr.getUserStatus(localStorage.getItem("connectedAddress"))
     return status
 }
 
@@ -94,9 +94,6 @@ const owner = async () => {
     const owner = await ehr.getOwner()
     return owner
 }
-
-
-
 
 export {
     ehr, 

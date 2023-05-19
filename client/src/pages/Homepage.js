@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { ehr } from "../api/ehrContractApi";
+import { ehr, getUserStatus } from "../api/ehrContractApi";
 
 const Homepage = () => {
   const [address, setAddress] = useState(null);
@@ -18,7 +18,7 @@ const Homepage = () => {
   };
 
   useEffect(() => {
-    const storedAddress = localStorage.getItem("connectedAddress");
+    const storedAddress = localStorage.getItem("connectedAddress")
     if (storedAddress) {
       setAddress(storedAddress);
     }
@@ -60,14 +60,14 @@ const Homepage = () => {
           </div>
         )}
       </span>
-      {!address && (
+      {(!address && (
         <button
           onClick={connectWallet}
           className="p-3 rounded-md w-full bg-green-400"
         >
           Connect Wallet
         </button>
-      )}
+      ))}
     </div>
   );
 };
