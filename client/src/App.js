@@ -14,17 +14,11 @@ function App() {
     <>
       <Homepage />
       <hr className="w-full border-2" />
-
-      <RegisterUser/>
-
+      <RegisterUser />
       <hr className="w-full border-2" />
       <AddHospitalForm />
-
-   
-
       <hr className="w-full" />
       <Hospital />
-
       <hr />
     </>
   );

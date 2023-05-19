@@ -14,10 +14,10 @@ module.exports = {
     hardhat: {
       chainId: 1337,
     },
-    localhost: {
-      url: process.env.LOCAL_URL,
-      privateKey: process.env.LOCAL_PRIVATE_KEY,
-    }
+    // localhost: {
+    //   url: process.env.LOCAL_URL,
+    //   privateKey: process.env.LOCAL_PRIVATE_KEY,
+    // }
   },
   docgen: {
     path: './docs',

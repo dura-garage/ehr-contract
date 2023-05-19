@@ -1,46 +1,57 @@
 import { useEffect, useState } from "react";
-import {CHAIN_ID} from "../constants/config";
+import { ehr } from "../api/ehrContractApi";
 
 const Homepage = () => {
-  const [address, setAddress] = useState(window.ethereum.selectedAddress);
+  const [address, setAddress] = useState(null);
+  const [isOwner, setIsOwner] = useState(null);
 
-
-  useEffect(() => {
-    setAddress(window.ethereum.selectedAddress);
-  }, [address]);
-
-  useEffect(() => {
-    // Listen for the accountsChanged event
-    window.ethereum.on('accountsChanged', (accounts) => {
-      setAddress(accounts[0]);
-    });
-  }, []);
-
-
-  const handleLogin = async () => {
-    try {
-     
-
-      //check the chain id
-      const chainId = await window.ethereum.chainId;
-      const decimalChainId= parseInt(chainId,16);
-      console.log("ChainID", decimalChainId);
-      if (decimalChainId !== CHAIN_ID) {
-        alert("Please connect to the Correct Network");
-      }
-      else {
-        const res = await window.ethereum.request({
-          method: "eth_requestAccounts",
-        });
-        setAddress(res[0]);
-      }
-    } catch (err) {
-      console.error(err);
+  const connectWallet = async () => {
+    await window.ethereum.request({ method: 'eth_requestAccounts' });
+    const addr = window.ethereum.selectedAddress;
+    setAddress(addr);
+    const owner = await ehr.owner();
+    if (owner.toUpperCase() === addr.toUpperCase()) {
+      setIsOwner(true);
+      console.log("owner", owner);
+      console.log("address", addr);
     }
   };
 
+  useEffect(() => {
+    const storedAddress = localStorage.getItem("connectedAddress");
+    if (storedAddress) {
+      setAddress(storedAddress);
+    }
+
+    async function fetchData() {
+      if (window.ethereum === undefined) {
+        console.log("no wallet detected");
+      } else {
+        window.ethereum.on("accountsChanged", function account(accounts) {
+          const selectedAddress = accounts[0];
+          setAddress(selectedAddress);
+          localStorage.setItem("connectedAddress", selectedAddress);
+          console.log("changed account addr", selectedAddress);
+        });
+      }
+    }
+    fetchData();
+  }, []);
+
+  useEffect(() => {
+    if (address) {
+      const checkOwner = async () => {
+        const owner = await ehr.owner();
+        if (owner.toUpperCase() === address.toUpperCase()) {
+          setIsOwner(true);
+        }
+      };
+      checkOwner();
+    }
+  }, [address]);
+
   return (
-    <div className=" p-4">
+    <div className="p-4">
       <span className="flex items-center gapx-4">
         {address && (
           <div>
@@ -49,12 +60,16 @@ const Homepage = () => {
           </div>
         )}
       </span>
-      {!address && (<button
-        onClick={handleLogin}
-        className=" p-3 rounded-md w-full bg-green-400"
-      > Connect Wallet
-      </button>)}
+      {!address && (
+        <button
+          onClick={connectWallet}
+          className="p-3 rounded-md w-full bg-green-400"
+        >
+          Connect Wallet
+        </button>
+      )}
     </div>
   );
 };
+
 export default Homepage;

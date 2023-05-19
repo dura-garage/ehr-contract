@@ -1,17 +1,13 @@
-import { CONTRACT_ABI, CONTRACT_ADDRESS } from "../constants/config";
-import { ethers } from "ethers";
+import React from "react";
 import { useState, useEffect } from "react";
-
+import { contractMethod } from '../api/ehrContractApi'
 
 function RegisterUser() {
   const [userStatus, setUserStatus] = useState(false);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-    const transaction = await contract.registerUser();
+    const transaction = await contractMethod.registerUser();
     const result = await transaction.wait();
     setUserStatus(true);
     alert(result.events[0].event);
@@ -19,10 +15,9 @@ function RegisterUser() {
   }
 
   const checkUserStatus = async () => {
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, provider);
-    const userAddress = await provider.getSigner().getAddress();
-    const status = await contract.getUserStatus(userAddress);
+    const userAddress = localStorage.getItem("connectedAddress");
+    const status = await contractMethod.getUserStatus(userAddress);
+    console.log("status is ", status)
     setUserStatus(status);
     if (status > 0) {
       setUserStatus(true);

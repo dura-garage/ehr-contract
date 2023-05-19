@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { ethers } from "ethers";
-import { CONTRACT_ABI, CONTRACT_ADDRESS } from "../constants/config";
 import HospitalCard from "./HospitalCard";
+import { ehr } from "../api/ehrContractApi";
 
 
 function Hospital() {
@@ -9,12 +8,9 @@ function Hospital() {
 
   useEffect(() => {
     async function fetchHospitals() {
-      const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const contract = new ethers.Contract( CONTRACT_ADDRESS, CONTRACT_ABI, provider);
-      const result = await contract.getAllHospitals();
-
+      const result = await ehr.getAllHospitals();
       setHospitals(result);
-      console.log(result);
+      console.log("Results ", result);
     }
     fetchHospitals();
   }, []);

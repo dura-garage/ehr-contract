@@ -1,7 +1,6 @@
 import { useState } from "react";
-import { CONTRACT_ABI, CONTRACT_ADDRESS , API_KEY, API_SECRET} from '../constants/config';
-import { ethers } from 'ethers';
 import { create } from 'ipfs-http-client';
+import { contractMethod } from "../api/ehrContractApi";
 
 const ipfs = create({ host: "localhost", port: 5001, protocol: "http" });
 
@@ -18,19 +17,20 @@ function AddHospitalForm() {
 
 
   async function handleSubmit(e) {
-    e.preventDefault();
-    const ipfsHash = await ipfs.add(selectedFile);
-    setImage(ipfsHash.path);
-    console.log("IPFS Hash: ", ipfsHash.path);
+    try {
 
-
-
-    const provider = new ethers.providers.Web3Provider(window.ethereum);
-    const signer = provider.getSigner();
-    const contract = new ethers.Contract(CONTRACT_ADDRESS, CONTRACT_ABI, signer);
-    const transaction = await contract.registerHospital(hospital_address, name, description, image);
-    const result = await transaction.wait();
-    console.log(result);
+      e.preventDefault();
+      const ipfsHash = await ipfs.add(selectedFile);
+      console.log("here")
+      setImage(ipfsHash.path);
+      console.log("ipfs hash", ipfsHash);
+      console.log("IPFS Hash: ", ipfsHash.path);
+      const transaction = await contractMethod.registerHospital(hospital_address, name, description, image);
+      const result = await transaction.wait();
+      console.log("Result", result);
+    } catch (error) {
+      console.log(error);
+    }
   }
 
   const handleFileInputChange = (event) => {
@@ -39,8 +39,6 @@ function AddHospitalForm() {
   };
 
   return (
-
-
     <form onSubmit={handleSubmit} className="p-3">
       <label>
         Address:
