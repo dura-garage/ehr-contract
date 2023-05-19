@@ -15,7 +15,7 @@ async function main() {
   const C1 = await ethers.getContractFactory("ehr");
   const c1 = await C1.deploy();
   await c1.deployed();
-  console.log("c1 deployed to:", c1.address);
+  console.log("EHR Contract Address:", c1.address);
 
 }
 

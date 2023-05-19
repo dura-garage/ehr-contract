@@ -12,8 +12,11 @@ contract ehr {
     enum Status {NOT_REGISTERED, REGISTERED, DOCTOR, ADMIN}
 
     struct Hospital{
+        string name;
+        string description;
         address admin;
         address[] doctors;
+        string image;
     }
 
     struct Record{
@@ -28,6 +31,8 @@ contract ehr {
     }
 
     mapping(address => Hospital) public hospitals;/// @dev hospital admin address => hospital
+    Hospital[] public hospitalsArray;
+
     mapping(address => User) public users;/// @dev user address => user
     mapping(address => Record[]) private recordOfUser;/// @dev user address => records
     mapping(address => mapping(address => bool)) private accessGranted;/// @dev patient address => doctor address => access granted
@@ -104,6 +109,15 @@ contract ehr {
         return true;
     }
 
+    /// @notice Get the status of a user
+    /// @dev Return the status of a user
+    /// @param _user_address the address of the user
+    /// @return status of the user
+    function getUserStatus(address _user_address) external view returns(Status) {
+        return users[_user_address].status;
+    }
+
+
     /// @notice Doctor registration, only the owner of the contract can call this function
     /// @dev Set the user status to DOCTOR
     /// @return true if the user is registered as a doctor
@@ -116,15 +130,28 @@ contract ehr {
     /// @notice Register a hospital, only the owner of the contract can call this function
     /// @dev Add a hospital to the hospitals mapping
     /// @param _hospital_admin_address the address of the hospital
+    /// @param name the name of the hospital
+    /// @param description the description of the hospital
+    /// @param img the image of the hospital
     /// @return true if the hospital is registered
-    function registerHospital(address _hospital_admin_address) external onlyOwner() onlyRegisteredUser(_hospital_admin_address) returns(bool) {
+    function registerHospital(address _hospital_admin_address, string memory name, string memory description, string memory img) external onlyOwner() onlyRegisteredUser(_hospital_admin_address) returns(bool) {
         Hospital memory hospital;
+        hospital.name = name;
         hospital.admin = _hospital_admin_address;
         hospital.doctors = new address[](0);
+        hospital.description = description;
+        hospital.image = img;
+
         users[_hospital_admin_address].status = Status.ADMIN;
         hospitals[_hospital_admin_address] = hospital;
+
+        hospitalsArray.push(hospital);
         emit HospitalRegistered(_hospital_admin_address);
         return true;
+    }
+
+    function getAllHospitals() external view returns(Hospital[] memory){
+        return hospitalsArray;
     }
 
     /// @notice Add a doctor to a hospital, only the admin of the hospital can call this function
