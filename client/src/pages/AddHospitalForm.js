@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { CONTRACT_ABI, CONTRACT_ADDRESS , API_KEY, API_SECRET} from '../constants/config';
+import { CONTRACT_ABI, CONTRACT_ADDRESS} from '../constants/config';
 import { ethers } from 'ethers';
 import { create } from 'ipfs-http-client';
 
@@ -20,8 +20,9 @@ function AddHospitalForm() {
   async function handleSubmit(e) {
     e.preventDefault();
     const ipfsHash = await ipfs.add(selectedFile);
-    setImage(ipfsHash.path);
-    console.log("IPFS Hash: ", ipfsHash.path);
+    const path = await ipfs.get(ipfsHash);
+    setImage(path);
+    console.log("IPFS Hash: ", path);
 
 
 
