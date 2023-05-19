@@ -15,16 +15,20 @@ function Hospital() {
     fetchHospitals();
   }, []);
 
+
+
   return (
     <div>
       <h2>List of Available Hospitals</h2>
       <ul>
         {hospitals.map((hospital) => (
-          <HospitalCard key={hospital.id} name={hospital[0]} description={hospital[1]} ethAddress={hospital[2]} />
+          <HospitalCard key={hospital.admin} ethAddress={hospital.admin} name={hospital.name} description={hospital.description}  image={hospital.image}/>
         ))}
+
       </ul>
     </div>
   );
 }
 
 export default Hospital;
+
