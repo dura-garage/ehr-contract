@@ -79,7 +79,7 @@ contract ehr {
     event DoctorAddedToHospital(address indexed doctor, address indexed hospital);
 
     /// @notice Event emitted when a doctor sends a record to a patient
-    event RecordSentToPatient(address indexed doctor, address indexed patient, string dataHash); // TODO: don't use the actual dataHash
+    event RecordSentToPatient(address indexed doctor, address indexed patient); // TODO: don't use the actual dataHash
 
     /// @notice Event emitted when a doctor requests access to a patient's record
     event AccessRequested(address indexed doctor, address indexed patient);
@@ -89,6 +89,8 @@ contract ehr {
 
     /// @notice Event emitted when a patient revokes access to a doctor
     event AccessRevoked(address indexed doctor, address indexed patient);
+
+
 
 
     /// @notice Get the owner of the contract
@@ -131,16 +133,14 @@ contract ehr {
     /// @dev Add a hospital to the hospitals mapping
     /// @param _hospital_admin_address the address of the hospital
     /// @param name the name of the hospital
-    /// @param description the description of the hospital
-    /// @param img the image of the hospital
+    /// @param logo the logo of the hospital
     /// @return true if the hospital is registered
-    function registerHospital(address _hospital_admin_address, string memory name, string memory description, string memory img) external onlyOwner() onlyRegisteredUser(_hospital_admin_address) returns(bool) {
+    function registerHospital(address _hospital_admin_address, string memory name, string memory logo) external onlyOwner() onlyRegisteredUser(_hospital_admin_address) returns(bool) {
         Hospital memory hospital;
         hospital.name = name;
         hospital.admin = _hospital_admin_address;
         hospital.doctors = new address[](0);
-        hospital.description = description;
-        hospital.image = img;
+        hospital.image = logo;
 
         users[_hospital_admin_address].status = Status.ADMIN;
         hospitals[_hospital_admin_address] = hospital;
@@ -184,6 +184,7 @@ contract ehr {
         record.patient = _patient_address;
         record.timestamp = block.timestamp;
         recordOfUser[_patient_address].push(record);
+        emit RecordSentToPatient(msg.sender, _patient_address);
         return true;
     }
 

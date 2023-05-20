@@ -24,11 +24,12 @@ const contractMethod = new ethers.Contract(
 )
 
 const registerUser = async () => {
-    return contractMethod.registerUser()
+    const result = await  contractMethod.registerUser()
+    return await result.wait()
 }
 
-const getUserStatus = async () => {
-    const status = await ehr.getUserStatus(localStorage.getItem("connectedAddress"))
+const getUserStatus = async (userAccount) => {
+    const status = await ehr.getUserStatus(userAccount)
     return status
 }
 
@@ -37,7 +38,8 @@ const registerDoctor = async (doctorAddress) => {
 }
 
 const registerHospital = async (hospitalAddress, hospitalName, hospitalLogoHash) => {
-    return contractMethod.registerHospital(hospitalAddress, hospitalName, hospitalLogoHash)
+    const response = await contractMethod.registerHospital(hospitalAddress, hospitalName, hospitalLogoHash)
+    return await response.wait()
 }
 
 const getAllHospitals = async () => {
@@ -46,21 +48,23 @@ const getAllHospitals = async () => {
 }
 
 const addDoctorToHospital = async (doctorAddress) => {
-    return contractMethod.addDoctorToHospital(doctorAddress)
+    const response=await contractMethod.addDoctorToHospital(doctorAddress)
+    return await response.wait()
 }
 
 const getDoctorsOfHospital = async (hospitalAddress) => {
-    const doctors = await ehr.getDoctorsOfHospital(hospitalAddress)
+    const doctors = await ehr.getDoctors(hospitalAddress)
     return doctors
 }
 
 const sendRecordToPatient = async (patientAddress, recordHash) => {
-    return contractMethod.sendRecordToPatient(patientAddress, recordHash)
+    const response= await contractMethod.sendRecordToPatient(patientAddress, recordHash)
+    return await response.wait()
 }
 
 const getMyRecords = async () => {
     const records = await ehr.getMyRecords()
-    return records
+    return records // array of record hash
 }
 
 const requestAccessToRecordHistory = async (patientAddress) => {
@@ -90,9 +94,12 @@ const getRecordHistoryOfPatient = async (patientAddress) => {
     return records
 }
 
-const owner = async () => {
-    const owner = await ehr.getOwner()
-    return owner
+const owner = () => {
+    const owner = ehr.getOwner()
+    owner.then((result) => {
+        return result
+    }
+    )
 }
 
 export {
@@ -107,6 +114,7 @@ export {
     getAllHospitals,
     addDoctorToHospital,
     getDoctorsOfHospital,
+    
     sendRecordToPatient,
     getMyRecords,
     requestAccessToRecordHistory,
