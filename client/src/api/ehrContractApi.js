@@ -24,7 +24,7 @@ const contractMethod = new ethers.Contract(
 )
 
 const registerUser = async () => {
-    const result = await  contractMethod.registerUser()
+    const result = await contractMethod.registerUser()
     return await result.wait()
 }
 
@@ -48,7 +48,7 @@ const getAllHospitals = async () => {
 }
 
 const addDoctorToHospital = async (doctorAddress) => {
-    const response=await contractMethod.addDoctorToHospital(doctorAddress)
+    const response = await contractMethod.addDoctorToHospital(doctorAddress)
     return await response.wait()
 }
 
@@ -58,7 +58,7 @@ const getDoctorsOfHospital = async (hospitalAddress) => {
 }
 
 const sendRecordToPatient = async (patientAddress, recordHash) => {
-    const response= await contractMethod.sendRecordToPatient(patientAddress, recordHash)
+    const response = await contractMethod.sendRecordToPatient(patientAddress, recordHash)
     return await response.wait()
 }
 
@@ -102,11 +102,19 @@ const owner = () => {
     )
 }
 
+const isOwner = async (userAddress) => {
+    const owner = await ehr.getOwner()
+    console.log("Owner: ", owner)
+    console.log("User: ", userAddress)
+    console.log("Result: ", owner.toLowerCase() === userAddress)
+    return owner === userAddress
+}
+
 export {
-    ehr, 
+    ehr,
     contractMethod,
     signer,
-    owner,
+    isOwner,
     registerUser,
     getUserStatus,
     registerDoctor,
@@ -114,7 +122,7 @@ export {
     getAllHospitals,
     addDoctorToHospital,
     getDoctorsOfHospital,
-    
+
     sendRecordToPatient,
     getMyRecords,
     requestAccessToRecordHistory,

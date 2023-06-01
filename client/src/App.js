@@ -1,11 +1,18 @@
 import "./App.css";
-import Home from "./components/Home";
-
+import Navbar from "./components/Navbar";
+import Dashboard from "./components/Dashboard";
+import EhrState from "./context/EhrState";
 
 function App() {
 
   return (
-    <Home />
+
+    <>
+      <EhrState>
+        <Navbar />
+        <Dashboard />
+      </EhrState>
+    </>
   );
 }
 

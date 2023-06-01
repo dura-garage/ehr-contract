@@ -1,42 +1,47 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useContext } from 'react'
 import AddHospital from './AddHospital';
 import AddDoctor from './AddDoctor';
-import { getUserStatus, getAllHospitals, getDoctorsOfHospital, getMyRecords } from '../api/ehrContractApi';
+import { getUserStatus, getAllHospitals, getDoctorsOfHospital, getMyRecords, isOwner } from '../api/ehrContractApi';
 import HospitalList from './HospitalsList';
 import AddDoctorToHospital from './AddDoctorToHospital';
 import DoctorsList from './DoctorsList';
 import SendRecordToPatient from './SendRecord';
 import MyRecords from './MyRecords';
+import EhrContext from '../context/ehrContext';
 
 function Dashboard() {
-    const [userStatus, setUserStatus] = useState(null)
-    const [account, setAccount] = useState(null)
-    const [isConnected, setIsConnected] = useState(false)
     const [hospitals, setHospitals] = useState([])
     const [doctors, setDoctors] = useState([])
     const [myRecords, setMyRecords] = useState([])
 
+    const { currentAccount, currentAccountStatus, isCurrentAccountOwner, setCurrentAccountFunc, setCurrentAccountStatusFunc, setIsCurrentAccountOwnerFunc } = useContext(EhrContext)
+
 
 
     useEffect(() => {
-        setAccount(window.ethereum.selectedAddress)
-        getUserStatus(window.ethereum.selectedAddress).then((result) => {
-            console.log("User Status: ", result)
-            setUserStatus(result)
-        })
-        setIsConnected(true)
+        if (localStorage.getItem("account") !== null) {
+            setCurrentAccountFunc(localStorage.getItem("account"))
+            getUserStatus(localStorage.getItem("account")).then((result) => {
+                setCurrentAccountStatusFunc(result)
+            })
+            setIsCurrentAccountOwnerFunc(isOwner(localStorage.getItem("account").toLowerCase()))
 
-        getMyRecords().then((result) => {
-            console.log("My Records: ", result)
-            setMyRecords([...result])
+            getMyRecords().then((result) => {
+                console.log("My Records: ", result)
+                setMyRecords([...result])
+            }
+            )
         }
-        )
+        else {
+            // alert the user to connect to metamask
+
+        }
 
     }, [])
 
 
     useEffect(() => {
-        if (userStatus > 0) {
+        if (currentAccountStatus > 0) {
             // get all hospitals
             getAllHospitals().then((result) => {
                 console.log("All Hospitals: ", result)
@@ -44,42 +49,35 @@ function Dashboard() {
             }
             )
         }
-    }, [userStatus])
-
-
-
-    useEffect(() => {
-        if (userStatus === 3) {
+        if (currentAccountStatus === 3) {
             // get all doctors of hospital
-            getDoctorsOfHospital(account).then((result) => {
+            getDoctorsOfHospital(currentAccount).then((result) => {
                 console.log("All Doctors: ", result)
                 setDoctors([...result])
             })
         }
-    }, [userStatus, account])
+    }, [currentAccountStatus, currentAccount])
 
 
-    // detect account change and update account and user status
+    // detect account change and update state
     useEffect(() => {
         const accountChange = async () => {
             window.ethereum.on('accountsChanged', (accounts) => {
                 if (accounts.length === 0) {
                     console.log('Please connect to MetaMask.')
-                    setIsConnected(false)
-                } else if (accounts[0] !== account) {
-                    setAccount(accounts[0])
+                } else if (accounts[0] !== currentAccount) {
+                    setCurrentAccountFunc(accounts[0])
+                    localStorage.setItem("account", accounts[0])
+                    setIsCurrentAccountOwnerFunc(isOwner(localStorage.getItem("account").toLowerCase()))
                     getUserStatus(accounts[0]).then((result) => {
-                        console.log("User Status: ", result)
-                        setUserStatus(result)
+                        setCurrentAccountStatusFunc(result)
                     })
-                    console.log("Connected: ", accounts[0])
-                    setIsConnected(true)
                 }
             })
         }
         accountChange()
+    }, [currentAccount])
 
-    }, [account])
 
     const onHospitalAdded = (h) => {
         setHospitals([...h])
@@ -94,23 +92,45 @@ function Dashboard() {
 
     return (
         <>
-            {/** for admin only */}
-            <AddHospital onHospitalAdded={onHospitalAdded} />
-            <AddDoctor />
+            {currentAccountStatus === 0 && <h1>Please Register Yourself</h1>}
 
-            {/** for hospital admin only */}
-            <AddDoctorToHospital onDoctorAdded={onDoctorAdded} />
-            <DoctorsList doctors={doctors} />
+            {(currentAccountStatus === 1 || currentAccountStatus === 2)&&
+                <>
+                    <h1>Patient Page</h1>
+                    <MyRecords records={myRecords} />
+                    <HospitalList hospitals={hospitals} />
+                </>
 
-            {/** for doctor only */}
-            <SendRecordToPatient />
+            }
 
-            {/** for any user */}
-            {/** TODO: update record on user change */}
-            <MyRecords records={myRecords} />
+            {currentAccountStatus === 2 &&
+                <>
+                    <h1>Doctor Page</h1>
+                    <AddHospital onHospitalAdded={onHospitalAdded} />
+                </>
+            }
 
-            {/** for all users */}
-            <HospitalList hospitals={hospitals} />
+            {currentAccountStatus === 3 &&
+                <>
+                    <h1>Hospital Page</h1>
+                    <AddDoctorToHospital onDoctorAdded={onDoctorAdded} />
+                    <DoctorsList doctors={doctors} />
+                </>
+            }
+
+
+                Is Owner: {isCurrentAccountOwner.toString()}
+                
+            
+            {
+                isCurrentAccountOwner &&
+                <>
+                    <h1>Owner Page</h1>   
+                    <AddHospital onHospitalAdded={onHospitalAdded} />  
+                    <AddDoctor />
+                </>
+            }
+
         </>
     )
 }

@@ -13,7 +13,7 @@ contract ehr {
 
     struct Hospital{
         string name;
-        string description;
+        // string description;
         address admin;
         address[] doctors;
         string image;
@@ -27,14 +27,18 @@ contract ehr {
     }
 
     struct User{
-        Status status; // 0: not registered, 1: registered, 2: doctor, 3: adminofHospital
+        Status status; // 0: not registered, 1: registered, 2: doctor, 3: adminofHospital/hospital
     }
 
     mapping(address => Hospital) public hospitals;/// @dev hospital admin address => hospital
     Hospital[] public hospitalsArray;
 
     mapping(address => User) public users;/// @dev user address => user
+    // TODO : User[] public usersArray;
+
     mapping(address => Record[]) private recordOfUser;/// @dev user address => records
+    //TODO : Records
+
     mapping(address => mapping(address => bool)) private accessGranted;/// @dev patient address => doctor address => access granted
     mapping(address => mapping(address => bool)) private accessRequested;/// @dev patient address => doctor address => access requested
     

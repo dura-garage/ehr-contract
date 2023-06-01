@@ -1,27 +1,36 @@
-import { useState, useEffect } from 'react'
-import { getUserStatus, registerUser } from '../api/ehrContractApi'
+import { useContext, useEffect, useState } from 'react'
+import { getUserStatus, registerUser, isOwner } from '../api/ehrContractApi'
+import EhrContext from '../context/ehrContext'
 
 
 
 
 function Navbar() {
-    const [account, setAccount] = useState(null)
+    // const [account, setAccount] = useState(null)
+    // const [isConnected, setIsConnected] = useState(false)
+    // const [userStatus, setUserStatus] = useState(null)
+
+    const { currentAccount, currentAccountStatus, isCurrentAccountOwner, setCurrentAccountFunc, setCurrentAccountStatusFunc, setIsCurrentAccountOwnerFunc } = useContext(EhrContext)
     const [isConnected, setIsConnected] = useState(false)
-    const [userStatus, setUserStatus] = useState(null)
 
     useEffect(() => {
         const getAccount = async () => {
             const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-            setAccount(accounts[0])
-            getUserStatus(accounts[0]).then((result) => {
-                console.log("User Status: ", result)
-                setUserStatus(result)
-            })
-            console.log("Connected: ", accounts[0])
+            setCurrentAccountFunc(accounts[0])
+            setIsCurrentAccountOwnerFunc(isOwner(accounts[0]))
+            console.log("From Navbar isOwner: ", isCurrentAccountOwner)
             setIsConnected(true)
+            //save to local storage
+            localStorage.setItem("account", accounts[0])
+
+            getUserStatus(accounts[0]).then((result) => {
+                setCurrentAccountStatusFunc(result)
+            })
         }
         getAccount()
     }, [])
+
+
 
     // detect account change and update state
     useEffect(() => {
@@ -29,58 +38,63 @@ function Navbar() {
             window.ethereum.on('accountsChanged', (accounts) => {
                 if (accounts.length === 0) {
                     console.log('Please connect to MetaMask.')
-                    setIsConnected(false)
-                } else if (accounts[0] !== account) {
-                    setAccount(accounts[0])
-                    getUserStatus(accounts[0]).then((result) => {
-                        console.log("User Status: ", result)
-                        setUserStatus(result)
-                    })
-                    console.log("Connected: ", accounts[0])
+                } else if (accounts[0] !== currentAccount) {
+                    setCurrentAccountFunc(accounts[0])
+                    setIsCurrentAccountOwnerFunc(isOwner(currentAccount))
                     setIsConnected(true)
+                    //update the local storage
+                    localStorage.setItem("account", accounts[0])
+                    //agin get the user status
+                    getUserStatus(accounts[0]).then((result) => {
+                        setCurrentAccountStatusFunc(result)
+                    })
                 }
             })
         }
         accountChange()
-    }, [account])
+    }, [currentAccount, currentAccountStatus])
+
 
     //update the user status after registering the user
     useEffect(() => {
         const updateStatus = async () => {
-            if (account !== null) {
-                getUserStatus(account).then((result) => {
+            if (currentAccount !== null) {
+                localStorage.setItem("account", currentAccount)
+                setIsCurrentAccountOwnerFunc(isOwner(currentAccount))
+                setIsConnected(true)
+                getUserStatus(currentAccount).then((result) => {
                     console.log("User Status: ", result)
-                    setUserStatus(result)
+                    setCurrentAccountStatusFunc(result)
                 })
             }
         }
         updateStatus()
-    }, [account])
+    }, [currentAccount])
 
 
 
     const handleConnectWallet = async () => {
         const accounts = await window.ethereum.request({ method: 'eth_requestAccounts' })
-        setAccount(accounts[0])
-        getUserStatus(accounts[0]).then((result) => {
-            console.log("User Status: ", result)
-            setUserStatus(result)
-        })
-        console.log("Connected: ", accounts[0])
+        setCurrentAccountFunc(accounts[0])
+        setIsCurrentAccountOwnerFunc(isOwner(currentAccount))
         setIsConnected(true)
+        localStorage.setItem('account', accounts[0])
+        getUserStatus(accounts[0]).then((result) => {
+            setCurrentAccountStatusFunc(result)
+        })
     }
 
     const handleUserRegister = async () => {
         const result = await registerUser()
         console.log("Event: ", result.events[0].event)
-        setUserStatus(getUserStatus(account))
-        console.log("User Status: ", userStatus)
+        setCurrentAccountStatusFunc(getUserStatus(currentAccount))
+        setIsCurrentAccountOwnerFunc(isOwner(currentAccount))
     }
 
     return (
         <nav className="navbar navbar-expand-lg bg-body-tertiary">
             <div className="container-fluid">
-                <a className="navbar-brand" href="/">MyApp</a>
+                <a className="navbar-brand" href="/">DHR</a>
                 <button className="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span className="navbar-toggler-icon"></span>
                 </button>
@@ -94,10 +108,10 @@ function Navbar() {
 
                         <button className="btn btn-outline-success" disabled={isConnected} onClick={handleConnectWallet}>
                             {
-                                isConnected ? account : "Connect Wallet"
+                                isConnected ? currentAccount : "Connect Wallet"
                             }
                         </button>
-                        {isConnected && <button className={`btn btn-outline-success mx-1 ${(userStatus > 0) ? "d-none" : ''}`} onClick={handleUserRegister}  >
+                        {isConnected && <button className={`btn btn-outline-success mx-1 ${(currentAccountStatus > 0) ? "d-none" : ''}`} onClick={handleUserRegister}  >
                             Register
                         </button>}
                     </div>
