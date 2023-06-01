@@ -29,21 +29,23 @@ function AddHospital({onHospitalAdded}) {
         setHospitalName(document.getElementById("name").value);
 
         const file = document.getElementById("logoImge").files[0];
-        uploadToIPFS(file)
+        await uploadToIPFS(file)
 
         /** Add hospital to blockchain */
-        const response = registerHospital(hospitalAdminEthAddress, hospitalName, hospitalLogoImage);
-        onHospitalAdded(getAllHospitals());
+        const response = await registerHospital(hospitalAdminEthAddress, hospitalName, hospitalLogoImage);
+        
         console.log("Hospital Registration Response: ", response);
-
         formRef.current.reset()
+        // force a re-render
+        window.location.reload();
+        onHospitalAdded(getAllHospitals());
     }
 
     return (
         <>
             <div className="container">
                 <h1>Add Hospital</h1>
-                <form onSubmit={handleAddHospital} ref={formRef}>
+                <form onSubmit={handleAddHospital} ref={formRef} style={{width:"60%"}}>
                     <div className="mb-3">
                         <label htmlFor="ETHAddress" className="form-label">Ethereum Address</label>
                         <input type="text" className="form-control" id="ETHAddress" placeholder="0x03434eb5fF29E7883C5fD54c90dF4e6A59fA3D03" required />
@@ -59,8 +61,6 @@ function AddHospital({onHospitalAdded}) {
                     <div className="mb-3">
                         <button type="submit" className="btn btn-primary">Add Hospital</button>
                     </div>
-
-
                 </form>
             </div>
         </>

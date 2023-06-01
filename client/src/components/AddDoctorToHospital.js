@@ -20,7 +20,7 @@ function AddDoctorToHospital({onDoctorAdded}) {
         <>
             <div className="container">
                 <h1>Add Doctor to Hospital</h1>
-                <form onSubmit={handleAddDoctor} ref={formRef}>
+                <form onSubmit={handleAddDoctor} ref={formRef} style={{width:"60%"}}>
                     <div className="mb-3">
                         <label htmlFor="doctorAddress" className="form-label">Doctor's Ethereum Address</label>
                         <input type="text" className="form-control" id="doctorAddress" placeholder="0x03434eb5fF29E7883C5fD54c90dF4e6A59fA3D03" required />

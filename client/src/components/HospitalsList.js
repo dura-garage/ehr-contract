@@ -5,11 +5,11 @@ const HospitalList = ({ hospitals }) => {
   return (
     <div className='container'>
       <h1>List of Hospitals</h1>
-      <ul>
+      <div className="row">
         {hospitals.map((hospital) => (
             <HospitalCard  hospital={hospital} />
         ))}
-      </ul>
+      </div>
     </div>
   );
 };

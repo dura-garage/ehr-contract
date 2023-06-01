@@ -68,15 +68,15 @@ const getMyRecords = async () => {
 }
 
 const requestAccessToRecordHistory = async (patientAddress) => {
-    return contractMethod.requestAccessToRecordHistory(patientAddress)
+    return await contractMethod.requestAccessToRecordHistory(patientAddress)
 }
 
 const grantAccessToRecordHistory = async (doctorAddress) => {
-    return contractMethod.grantAccessToRecordHistory(doctorAddress)
+    return await contractMethod.grantAccessToRecordHistory(doctorAddress)
 }
 
 const revokeAccessToRecordHistory = async (doctorAddress) => {
-    return contractMethod.revokeAccessToRecordHistory(doctorAddress)
+    return await contractMethod.revokeAccessToRecordHistory(doctorAddress)
 }
 
 const getAccessStatus = async (doctorAddress) => {
@@ -94,21 +94,16 @@ const getRecordHistoryOfPatient = async (patientAddress) => {
     return records
 }
 
-const owner = () => {
-    const owner = ehr.getOwner()
-    owner.then((result) => {
-        return result
-    }
-    )
-}
-
 const isOwner = async (userAddress) => {
     const owner = await ehr.getOwner()
     console.log("Owner: ", owner)
     console.log("User: ", userAddress)
-    console.log("Result: ", owner.toLowerCase() === userAddress)
-    return owner === userAddress
+    const result = owner.toLowerCase() === userAddress
+    console.log("Result: ", result)
+    return result
 }
+
+
 
 export {
     ehr,
@@ -122,7 +117,6 @@ export {
     getAllHospitals,
     addDoctorToHospital,
     getDoctorsOfHospital,
-
     sendRecordToPatient,
     getMyRecords,
     requestAccessToRecordHistory,

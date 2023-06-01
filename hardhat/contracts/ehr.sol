@@ -46,6 +46,9 @@ contract ehr {
 
     constructor() {
         owner = msg.sender;
+        User memory user;
+        user.status = Status.REGISTERED;
+        users[msg.sender] = user;
     }
 
     modifier onlyOwner() {
@@ -108,6 +111,7 @@ contract ehr {
     /// @dev Add user to the users mapping
     /// @return true if the user is registered
     function registerUser() external returns(bool) {
+        require(users[msg.sender].status == Status.NOT_REGISTERED, "ALREADY_REGISTERED");
         User memory user;
         user.status = Status.REGISTERED;
         users[msg.sender] = user;
@@ -128,6 +132,7 @@ contract ehr {
     /// @dev Set the user status to DOCTOR
     /// @return true if the user is registered as a doctor
     function registerDoctor( address _doc_address) external  onlyOwner() onlyRegisteredUser(_doc_address)  returns(bool) {
+        require(users[_doc_address].status != Status.DOCTOR, "ALREADY_DOCTOR");
         users[_doc_address].status = Status.DOCTOR;
         emit DoctorRegistered(_doc_address);
         return true;
@@ -140,6 +145,7 @@ contract ehr {
     /// @param logo the logo of the hospital
     /// @return true if the hospital is registered
     function registerHospital(address _hospital_admin_address, string memory name, string memory logo) external onlyOwner() onlyRegisteredUser(_hospital_admin_address) returns(bool) {
+        require(hospitals[_hospital_admin_address].admin == address(0), "ALREADY_HOSPITAL");
         Hospital memory hospital;
         hospital.name = name;
         hospital.admin = _hospital_admin_address;
@@ -163,6 +169,11 @@ contract ehr {
     /// @param _doctor_address the address of the doctor
     /// @return true if the doctor is added to the hospital
     function addDoctorToHospital( address _doctor_address) external onlyHospitalAdmin() onlyRegisteredUser(_doctor_address) returns(bool) {
+        require(users[_doctor_address].status == Status.DOCTOR, "NOT_DOCTOR");
+        //cannot be added twice
+        for(uint i = 0; i < hospitals[msg.sender].doctors.length; i++){
+            require(hospitals[msg.sender].doctors[i] != _doctor_address, "ALREADY_ADDED");
+        }
         hospitals[msg.sender].doctors.push(_doctor_address);
         emit DoctorAddedToHospital(_doctor_address, msg.sender);
         return true;
