@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useContext } from 'react'
 import AddHospital from './AddHospital';
 import AddDoctor from './AddDoctor';
-import { getAllHospitals, getDoctorsOfHospital, getMyRecords} from '../api/ehrContractApi';
+import { getAllHospitals, getDoctorsOfHospital, getMyRecords } from '../api/ehrContractApi';
 import HospitalList from './HospitalsList';
 import AddDoctorToHospital from './AddDoctorToHospital';
 import DoctorsList from './DoctorsList';
@@ -17,54 +17,56 @@ function Dashboard() {
     const [doctors, setDoctors] = useState([])
     const [myRecords, setMyRecords] = useState([])
 
-    const { 
-        currentAccount, 
-        currentAccountStatus, 
-        isCurrentAccountOwner, 
+    const {
+        currentAccount,
+        currentAccountStatus,
+        isCurrentAccountOwner,
     } = useContext(EhrContext)
 
 
 
     useEffect(() => {
         //assuming that only patient can have records
-        if (currentAccountStatus === 1) {
-            getAllHospitals().then((result) => {
-                console.log("All Hospitals: ", result)
-                setHospitals(result)
-            }
-            )
+
+        async function fetchData() {
+            const hs = await getAllHospitals()
+            setHospitals(hs)
             // get my records
-            getMyRecords(currentAccount).then((result) => {
-                console.log("My Records: ", result)
-                setMyRecords(result)
-            })
+            const rs = await getMyRecords(currentAccount)
+            console.log("My Records: ", rs)
+            setMyRecords(rs)
+        }
+
+
+        if (currentAccountStatus === 1) {
+            fetchData()
         }
     }, [])
 
 
     useEffect(() => {
-        //only the hospital has access to doctors
-        if (currentAccountStatus === 3) {
-            // get all doctors of hospital
-            getDoctorsOfHospital(currentAccount).then((result) => {
-                console.log("All Doctors: ", result)
-                setDoctors([...result])
-            })
-        }
-        //assuming that only patient can have records
-        if(currentAccountStatus === 1) {
-            // get all hospitals
-            getAllHospitals().then((result) => {
-                console.log("All Hospitals: ", result)
-                setHospitals(result)
+
+        async function fetchData() {
+
+            //only the hospital has access to doctors
+            if (currentAccountStatus === 3) {
+                // get all doctors of hospital
+                const ds = await getDoctorsOfHospital(currentAccount)
+                setDoctors([...ds])
             }
-            )
-            // get my records
-            getMyRecords(currentAccount).then((result) => {
-                console.log("My Records: ", result)
-                setMyRecords(result)
-            })
+            //assuming that only patient can have records
+            if (currentAccountStatus === 1) {
+                // get all hospitals
+                const hs = await getAllHospitals()
+                setHospitals([...hs])
+
+                // get my records
+                const rs = await getMyRecords(currentAccount)
+                console.log("My Records: ", rs)
+                setMyRecords([...rs])
+            }
         }
+        fetchData()
     }, [currentAccountStatus, currentAccount])
 
 
@@ -83,14 +85,14 @@ function Dashboard() {
         <>
             {currentAccountStatus === 0 && <h1>Please Register Yourself</h1>}
 
-            
+
 
             {currentAccountStatus === 2 &&
                 <>
                     <h1>Doctor Page</h1>
                     <SendRecordToPatient />
-                    <AccessStatusDoctor/>
-                
+                    <AccessStatusDoctor />
+
                 </>
             }
 
@@ -100,29 +102,29 @@ function Dashboard() {
                     <AddDoctorToHospital onDoctorAdded={onDoctorAdded} />
                     <DoctorsList doctors={doctors} />
                 </>
-            }  
+            }
             {
-                isCurrentAccountOwner && 
+                isCurrentAccountOwner &&
                 <>
-                <h1>Owner Page</h1>
-                <AddHospital onHospitalAdded={onHospitalAdded} />
-                <AddDoctor onDoctorAdded={onDoctorAdded} />
+                    <h1>Owner Page</h1>
+                    <AddHospital onHospitalAdded={onHospitalAdded} />
+                    <AddDoctor onDoctorAdded={onDoctorAdded} />
                 </>
             }
-            {(currentAccountStatus === 1)&& !isCurrentAccountOwner && 
+            {(currentAccountStatus === 1) && !isCurrentAccountOwner &&
                 <>
                     <h1>Patient Page</h1>
                     <MyRecords records={myRecords} />
                     {/*  See doctors request for medical history */}
-                    
-                    <GrantAccessToMedicalHistory/>
-                    <AccessStatusPatient/>
+
+                    <GrantAccessToMedicalHistory />
+                    <AccessStatusPatient />
                     <HospitalList hospitals={hospitals} />
 
                 </>
 
             }
-    
+
         </>
     )
 }

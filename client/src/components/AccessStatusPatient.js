@@ -20,12 +20,8 @@ export default function AccessStatusPatient() {
         // update the patient and access status 
         const doctorAndGrantStatus = []
         for (let i = 0; i < docs.length; i++) {
-            console.log("i: ", i)
             let doctor = docs[i]
-            console.log("Doctor: ", doctor)
-            console.log("Current Account: ", currentAccount)
             const accessStatus = await getAccessStatus(currentAccount, doctor)
-            console.log("Access Status: ", accessStatus)
             if (accessStatus) { doctorAndGrantStatus.push({ doctor, accessStatus }) }
         }
         setdoctorAndGrantStatus(doctorAndGrantStatus)

@@ -68,12 +68,14 @@ const getDoctorsOfHospital = async (hospitalAddress) => {
 }
 
 const sendRecordToPatient = async (patientAddress, recordHash) => {
+    console.log("patientAddress: ", patientAddress)
     const response = await contractMethod.sendRecordToPatient(patientAddress, recordHash)
-    return await response.wait()
+    return response
 }
 
 const getMyRecords = async () => {
-    const records = await ehr.getMyRecords()
+    const currentAccount = await signer.getAddress()
+    const records = await ehr.getMyRecords({ from: currentAccount})
     return records // array of record hash
 }
 

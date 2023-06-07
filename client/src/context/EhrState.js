@@ -17,7 +17,6 @@ export default function EhrState(props) {
         setCurrentAccount(accounts[0]);
         const result = await isOwner(accounts[0]);
         setIsCurrentAccountOwner(result);
-        console.log("handleConnectWallet: isOwner :", result)
         setIsConnected(true)
         localStorage.setItem('account', accounts[0])
         getUserStatus(accounts[0]).then((result) => {
@@ -32,7 +31,6 @@ export default function EhrState(props) {
 
   const handleUserRegister = async () => {
     const userResult = await registerUser()
-    console.log("Event: ", userResult.events[0].event)
     setCurrentAccountStatus(getUserStatus(currentAccount))
     //force refresh
     window.location.reload();
@@ -47,7 +45,6 @@ export default function EhrState(props) {
       localStorage.setItem('account', accounts[0]);
       const result = await isOwner(accounts[0]);
       setIsCurrentAccountOwner(result);
-      console.log("ehrState: isOwner :", result)
       setIsConnected(true);
       getUserStatus(accounts[0]).then((result) => {
         setCurrentAccountStatus(result);
@@ -66,7 +63,6 @@ export default function EhrState(props) {
         setCurrentAccount(accounts[0]);
         const result = await isOwner(accounts[0]);
         setIsCurrentAccountOwner(result);
-        console.log("ehrState accountChanged: isOwner :", result)
         getUserStatus(accounts[0]).then((result) => {
           setCurrentAccountStatus(result);
         });

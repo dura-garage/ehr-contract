@@ -2,10 +2,6 @@ import { useEffect } from "react"
 
 function HospitalCard({ hospital, key }) {
     const imageURI = `https://ipfs.io/ipfs/${hospital.image}`
-
-    useEffect(() => {
-        console.log(imageURI)
-    }, [])
     return (
         <div className="card m-2" style={{ width: "18rem" }}>
             <img src={imageURI} className="card-img-top" alt={`${hospital.name}`} />

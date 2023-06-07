@@ -6,11 +6,11 @@ const MyRecords = ({ records }) => {
     return (
         <div className='container'>
             <h1>My Records</h1>
-            {(records !== undefined) ? (<ul>
+            {(records !== undefined) ? (<div className='row' >
                 {records.map((r) => (
                     <RecordCard record={r} key={r.timestamp._hex} />    
                 ))}
-            </ul>) : "No Records Found"}
+            </div>) : "No Records Found"}
         </div>
     );
 };

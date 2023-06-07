@@ -55,7 +55,8 @@ function SendRecordToPatient({ onDoctorAdded }) {
         await uploadToIPFS(document.getElementById("patientRecord").files[0])
         /** send the report to patient */
         await sendRecordToPatient(patient, report);
-        console.log("Report sent to patient")
+        console.log("https://ipfs.io/ipfs/" + report)
+
 
         formRef.current.reset()
 
@@ -73,7 +74,7 @@ function SendRecordToPatient({ onDoctorAdded }) {
                     </div>
                     <div className="mb-3">
                         <label htmlFor="patientRecord" className="form-label">Report</label>
-                        <input type="file" className="form-control" id="patientRecord" placeholder="" required />
+                        <input type="file" className="form-control" id="patientRecord" placeholder="" required  accept="image/*" />
                     </div>
 
                     <div className="mb-3">

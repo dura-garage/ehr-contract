@@ -56,7 +56,7 @@ function AddHospital({onHospitalAdded}) {
                     </div>
                     <div className="mb-3">
                         <label htmlFor="logoImge" className="form-label">Logo</label>
-                        <input type="file" className="form-control" id="logoImge" placeholder="Janki Hospital" required />
+                        <input type="file" className="form-control" id="logoImge" placeholder="Janki Hospital" required  accept='image/*'/>
                     </div>
                     <div className="mb-3">
                         <button type="submit" className="btn btn-primary">Add Hospital</button>
