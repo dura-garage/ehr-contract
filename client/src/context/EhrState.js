@@ -8,6 +8,7 @@ export default function EhrState(props) {
   const [currentAccountStatus, setCurrentAccountStatus] = useState(0)
   const [isCurrentAccountOwner, setIsCurrentAccountOwner] = useState(false)
   const [isConnected, setIsConnected] = useState(false)
+  const [refreshRequired, setRefreshRequired] = useState(false)
 
   const handleConnectWallet = async () => {
     if (window.ethereum) {
@@ -100,7 +101,9 @@ export default function EhrState(props) {
       currentAccountStatus,
       setIsConnected,
       handleConnectWallet,
-      handleUserRegister
+      handleUserRegister,
+      refreshRequired,
+      setRefreshRequired
 
     }}>
       {props.children}

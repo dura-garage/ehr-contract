@@ -7,9 +7,10 @@ import AddDoctorToHospital from './AddDoctorToHospital';
 import DoctorsList from './DoctorsList';
 import SendRecordToPatient from './SendRecord';
 import MyRecords from './MyRecords';
-import DoctorsRequestForMedicalHistory from './DoctorsRequestForMedicalHistory';
-import ReqestToPatientMedicalHistory from './ReqestToPatientMedicalHistory';
+import GrantAccessToMedicalHistory from './GrantAccessToMedicalHistory';
 import EhrContext from '../context/ehrContext';
+import AccessStatusDoctor from './AccessStatusDoctor';
+import AccessStatusPatient from './AccessStatusPatient';
 
 function Dashboard() {
     const [hospitals, setHospitals] = useState([])
@@ -88,7 +89,8 @@ function Dashboard() {
                 <>
                     <h1>Doctor Page</h1>
                     <SendRecordToPatient />
-                    <ReqestToPatientMedicalHistory/>
+                    <AccessStatusDoctor/>
+                
                 </>
             }
 
@@ -107,12 +109,14 @@ function Dashboard() {
                 <AddDoctor onDoctorAdded={onDoctorAdded} />
                 </>
             }
-            {(currentAccountStatus === 1)&&
+            {(currentAccountStatus === 1)&& !isCurrentAccountOwner && 
                 <>
                     <h1>Patient Page</h1>
                     <MyRecords records={myRecords} />
                     {/*  See doctors request for medical history */}
-                    <DoctorsRequestForMedicalHistory/>
+                    
+                    <GrantAccessToMedicalHistory/>
+                    <AccessStatusPatient/>
                     <HospitalList hospitals={hospitals} />
 
                 </>

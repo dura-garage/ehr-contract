@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react'
 import { create } from 'ipfs-http-client'
 import { sendRecordToPatient } from '../api/ehrContractApi'
 
+
 function SendRecordToPatient({ onDoctorAdded }) {
     const [patient, setPatient] = useState("")
     const [report, setReport] = useState('')
@@ -9,11 +10,38 @@ function SendRecordToPatient({ onDoctorAdded }) {
     const formRef = useRef(null)
 
 
+    // To encrypt the report with patient's public key
+    // const encryptData = async (data, publicKey) => {
+    //     const enc = encrypt({
+    //         publicKey: publicKey.toString('base64'),
+    //         data: ascii85.encode(data).toString(),
+    //         version:'x25519-xsalsa20-poly1305',
+    //     });
+
+    //     const buf= Buffer.concat(
+    //         Buffer.from(enc.ephemPublicKey, 'base64'),
+    //         Buffer.from(enc.nonce, 'base64'),
+    //         Buffer.from(enc.ciphertext, 'base64'),
+    //     )
+    //     return buf;
+    // }
+
+
+
+
     const uploadToIPFS = async (file) => {
         try {
             const ipfs = create({ url: 'http://localhost:5001/' })
             const ipfsResponse = await ipfs.add(file)
             const ipfsHash = ipfsResponse.path
+
+            /** 
+             * TODO:
+             * 1. Encrypt the ipfsHash with patient's public key
+             * 2. Send the encrypted ipfsHash to patient
+            */
+     
+
             setReport(ipfsHash);
         }
         catch (err) {
@@ -23,9 +51,8 @@ function SendRecordToPatient({ onDoctorAdded }) {
 
     const handleSendRecord = async (e) => {
         e.preventDefault();
-        await uploadToIPFS(document.getElementById("patientRecord").files[0])
         setPatient(document.getElementById("patientAddress").value);
-
+        await uploadToIPFS(document.getElementById("patientRecord").files[0])
         /** send the report to patient */
         await sendRecordToPatient(patient, report);
         console.log("Report sent to patient")

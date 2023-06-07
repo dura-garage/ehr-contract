@@ -33,6 +33,16 @@ const getUserStatus = async (userAccount) => {
     return status
 }
 
+const getUserDoctors = async (patientAddress) => {
+    const doctors = await ehr.getUserDoctors(patientAddress)
+    return doctors
+}
+
+const getUserPatients = async (doctorAddress) => {
+    const patients = await ehr.getUserPatients(doctorAddress)
+    return patients
+}
+
 const registerDoctor = async (doctorAddress) => {
     return contractMethod.registerDoctor(doctorAddress)
 }
@@ -67,9 +77,9 @@ const getMyRecords = async () => {
     return records // array of record hash
 }
 
-const requestAccessToRecordHistory = async (patientAddress) => {
-    return await contractMethod.requestAccessToRecordHistory(patientAddress)
-}
+// const requestAccessToRecordHistory = async (patientAddress) => {
+//     return await contractMethod.requestAccessToRecordHistory(patientAddress)
+// }
 
 const grantAccessToRecordHistory = async (doctorAddress) => {
     return await contractMethod.grantAccessToRecordHistory(doctorAddress)
@@ -79,15 +89,15 @@ const revokeAccessToRecordHistory = async (doctorAddress) => {
     return await contractMethod.revokeAccessToRecordHistory(doctorAddress)
 }
 
-const getAccessStatus = async (doctorAddress) => {
-    const status = await ehr.getAccessStatus(doctorAddress)
+const getAccessStatus = async (patientAddress, doctorAddress) => {
+    const status = await ehr.getAccessStatus(patientAddress, doctorAddress)
     return status
 }
 
-const getRequestStatus = async (patientAddress) => {
-    const status = await ehr.getRequestStatus(patientAddress)
-    return status
-}
+// const getRequestStatus = async (patientAddress, doctorAddress) => {
+//     const status = await ehr.getRequestStatus(patientAddress, doctorAddress)
+//     return status
+// }
 
 const getRecordHistoryOfPatient = async (patientAddress) => {
     const records = await ehr.getRecordHistoryOfPatient(patientAddress)
@@ -96,10 +106,7 @@ const getRecordHistoryOfPatient = async (patientAddress) => {
 
 const isOwner = async (userAddress) => {
     const owner = await ehr.getOwner()
-    console.log("Owner: ", owner)
-    console.log("User: ", userAddress)
     const result = owner.toLowerCase() === userAddress
-    console.log("Result: ", result)
     return result
 }
 
@@ -112,6 +119,8 @@ export {
     isOwner,
     registerUser,
     getUserStatus,
+    getUserDoctors,
+    getUserPatients,
     registerDoctor,
     registerHospital,
     getAllHospitals,
@@ -119,10 +128,8 @@ export {
     getDoctorsOfHospital,
     sendRecordToPatient,
     getMyRecords,
-    requestAccessToRecordHistory,
     grantAccessToRecordHistory,
     revokeAccessToRecordHistory,
     getAccessStatus,
-    getRequestStatus,
     getRecordHistoryOfPatient
 };
