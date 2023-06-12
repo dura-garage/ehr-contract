@@ -423,7 +423,7 @@ contract ehr {
     {
         require(
             accessGranted[_patient_address][msg.sender] == true,
-            "Access not granted"
+            "NOT_GRANTED"
         );
         return recordOfUser[_patient_address];
     }

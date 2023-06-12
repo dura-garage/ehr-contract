@@ -1,25 +1,5 @@
 # Solidity API
 
-## C1
-
-### _owner
-
-```solidity
-address _owner
-```
-
-### constructor
-
-```solidity
-constructor() public
-```
-
-### getOwner
-
-```solidity
-function getOwner() public view returns (address)
-```
-
 ## ehr
 
 ### owner
@@ -43,8 +23,10 @@ enum Status {
 
 ```solidity
 struct Hospital {
+  string name;
   address admin;
   address[] doctors;
+  string image;
 }
 ```
 
@@ -64,6 +46,8 @@ struct Record {
 ```solidity
 struct User {
   enum ehr.Status status;
+  address[] doctors;
+  address[] patients;
 }
 ```
 
@@ -73,13 +57,19 @@ struct User {
 mapping(address => struct ehr.Hospital) hospitals
 ```
 
+### hospitalsArray
+
+```solidity
+struct ehr.Hospital[] hospitalsArray
+```
+
+_hospital admin address => hospital_
+
 ### users
 
 ```solidity
 mapping(address => struct ehr.User) users
 ```
-
-_hospital admin address => hospital_
 
 ### constructor
 
@@ -87,7 +77,7 @@ _hospital admin address => hospital_
 constructor() public
 ```
 
-_patient address => doctor address => access requested_
+_patient address => doctor address => access granted_
 
 ### onlyOwner
 
@@ -148,7 +138,7 @@ Event emitted when a doctor is added to a hospital
 ### RecordSentToPatient
 
 ```solidity
-event RecordSentToPatient(address doctor, address patient, string dataHash)
+event RecordSentToPatient(address doctor, address patient)
 ```
 
 Event emitted when a doctor sends a record to a patient
@@ -209,6 +199,72 @@ _Add user to the users mapping_
 | ---- | ---- | ----------- |
 | [0] | bool | true if the user is registered |
 
+### getUserStatus
+
+```solidity
+function getUserStatus(address _user_address) external view returns (enum ehr.Status)
+```
+
+Get the status of a user
+
+_Return the status of a user_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _user_address | address | the address of the user |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | enum ehr.Status | status of the user |
+
+### getUserDoctors
+
+```solidity
+function getUserDoctors(address _patient_address) external view returns (address[])
+```
+
+Get the doctors of a patient
+
+_Return the doctors of a patie_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _patient_address | address | the address of the patie |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | address[] | doctors of the patie |
+
+### getUserPatients
+
+```solidity
+function getUserPatients(address _doctor_address) external view returns (address[])
+```
+
+Get the patients of a doctor
+
+_Return the patients of a doctor_
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| _doctor_address | address | the address of the doctor |
+
+#### Return Values
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | address[] | patients of the doctor |
+
 ### registerDoctor
 
 ```solidity
@@ -228,7 +284,7 @@ _Set the user status to DOCTOR_
 ### registerHospital
 
 ```solidity
-function registerHospital(address _hospital_admin_address) external returns (bool)
+function registerHospital(address _hospital_admin_address, string name, string logo) external returns (bool)
 ```
 
 Register a hospital, only the owner of the contract can call this function
@@ -240,12 +296,20 @@ _Add a hospital to the hospitals mapping_
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | _hospital_admin_address | address | the address of the hospital |
+| name | string | the name of the hospital |
+| logo | string | the logo of the hospital |
 
 #### Return Values
 
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | [0] | bool | true if the hospital is registered |
+
+### getAllHospitals
+
+```solidity
+function getAllHospitals() external view returns (struct ehr.Hospital[])
+```
 
 ### addDoctorToHospital
 
@@ -324,28 +388,6 @@ _Return the records array of the user_
 | ---- | ---- | ----------- |
 | [0] | struct ehr.Record[] | the records array of the user |
 
-### requestAccessToRecordHistory
-
-```solidity
-function requestAccessToRecordHistory(address _patient_address) external returns (bool)
-```
-
-Doctor requests access to a record from patient, only a doctor can call this function
-
-_set the accessRequested mapping to true, for the patient and the doctor_
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _patient_address | address | the address of the patient |
-
-#### Return Values
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| [0] | bool | true if the access is requested |
-
 ### grantAccessToRecordHistory
 
 ```solidity
@@ -413,29 +455,6 @@ _Return the access status of a record_
 | ---- | ---- | ----------- |
 | [0] | bool | the access status of a record |
 
-### getRequestStatus
-
-```solidity
-function getRequestStatus(address _patient_address, address _doctor_address) external view returns (bool)
-```
-
-Get the request status of a record
-
-_Return the request status of a record_
-
-#### Parameters
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| _patient_address | address | the address of the patient |
-| _doctor_address | address | the address of the doctor |
-
-#### Return Values
-
-| Name | Type | Description |
-| ---- | ---- | ----------- |
-| [0] | bool | the request status of a record |
-
 ### getRecordHistoryOfPatient
 
 ```solidity
@@ -458,40 +477,26 @@ _Return the record of a patient_
 | ---- | ---- | ----------- |
 | [0] | struct ehr.Record[] | the record of a patient |
 
-## Test
-
-### Hospital
+### isInArray
 
 ```solidity
-struct Hospital {
-  address admin;
-  address[] doctors;
-}
+function isInArray(address[] array, address item) internal pure returns (bool)
 ```
 
-### hospitals
+To check is an address is in the array
 
-```solidity
-mapping(address => struct Test.Hospital) hospitals
-```
+_Return true if the address is in the array_
 
-### constructor
+#### Parameters
 
-```solidity
-constructor() public
-```
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| array | address[] | the array to check |
+| item | address | the address to check |
 
-_hospital admin address => hospital_
+#### Return Values
 
-### addHospital
-
-```solidity
-function addHospital(address _admin) public
-```
-
-### getDoctors
-
-```solidity
-function getDoctors() public view returns (address[])
-```
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| [0] | bool | true if the address is in the array |
 

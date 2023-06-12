@@ -1,11 +1,16 @@
 import React, { useContext, useEffect, useState } from 'react'
-import { getAccessStatus, getUserPatients } from '../api/ehrContractApi'
+import { getAccessStatus, getUserPatients, getRecordHistoryOfPatient } from '../api/ehrContractApi'
 import EhrContext from '../context/ehrContext'
+import PatientsRecords from './PatientsRecords'
 
 export default function AccessStatusDoctor() {
     const { currentAccount, currentAccountStatus } = useContext(EhrContext)
     const [patients, setPatients] = useState([])
     const [patientAndAccessStatus, setPatientAndAccessStatus] = useState([])
+    
+
+
+
 
     useEffect(() => {
         const getPatients = async () => {
@@ -48,6 +53,15 @@ export default function AccessStatusDoctor() {
                 }
                 </tbody>
             </table>
+                            {/* for each patient who has given access to their medical records display the records */}
+            <div>
+                <h2>Available Patient Records</h2>
+                {patientAndAccessStatus.map((patientAndAccessStatus) => {
+                    return (
+                       <PatientsRecords patientAddress={patientAndAccessStatus.patient} />
+                    )
+                })}
+            </div>
         </div>
     )
 }
